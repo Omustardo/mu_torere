@@ -6,29 +6,22 @@ use crate::screens::Screen;
 
 use super::{
     animation::MoveEvent,
-    board::{get_valid_moves, node_position, Piece, PIECE_RADIUS},
+    board::{get_valid_moves, Piece, PIECE_RADIUS},
     state::{GameMode, GameSettings, GameState, PieceColor},
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<SelectedPiece>();
     app.add_systems(
         Update,
-        (handle_click, clear_selection_on_game_over).run_if(in_state(Screen::Gameplay)),
+        handle_click.run_if(in_state(Screen::Gameplay)),
     );
-}
-
-#[derive(Resource, Default)]
-pub struct SelectedPiece {
-    pub entity: Option<Entity>,
 }
 
 fn handle_click(
     mouse: Res<ButtonInput<MouseButton>>,
     windows: Query<&Window, With<PrimaryWindow>>,
     cameras: Query<(&Camera, &GlobalTransform)>,
-    mut selected: ResMut<SelectedPiece>,
-    pieces: Query<(Entity, &Piece, &Transform, &Children)>,
+    pieces: Query<(Entity, &Piece, &Transform)>,
     pieces_for_validation: Query<(&Piece, &Children)>,
     game_state: Res<GameState>,
     settings: Res<GameSettings>,
@@ -73,42 +66,20 @@ fn handle_click(
         return;
     }
 
-    if let Some(selected_entity) = selected.entity {
-        if let Ok((_, piece, _, _)) = pieces.get(selected_entity) {
-            let valid_moves = get_valid_moves(piece, &pieces_for_validation);
-
-            for target_node in &valid_moves {
-                let node_pos = node_position(*target_node);
-                if world_pos.distance(node_pos) < PIECE_RADIUS + 15.0 {
-                    move_events.write(MoveEvent {
-                        piece_entity: selected_entity,
-                        target_node: *target_node,
-                    });
-                    selected.entity = None;
-                    return;
-                }
-            }
-        }
-    }
-
-    for (entity, piece, transform, _) in &pieces {
+    // Find clicked piece and move it if it has a valid move
+    for (entity, piece, transform) in &pieces {
         let piece_pos = transform.translation.truncate();
         if world_pos.distance(piece_pos) < PIECE_RADIUS + 5.0 {
             if piece.color == current_turn {
                 let valid_moves = get_valid_moves(piece, &pieces_for_validation);
-                if !valid_moves.is_empty() {
-                    selected.entity = Some(entity);
+                if let Some(&target_node) = valid_moves.first() {
+                    move_events.write(MoveEvent {
+                        piece_entity: entity,
+                        target_node,
+                    });
                     return;
                 }
             }
         }
-    }
-
-    selected.entity = None;
-}
-
-fn clear_selection_on_game_over(game_state: Res<GameState>, mut selected: ResMut<SelectedPiece>) {
-    if game_state.game_over {
-        selected.entity = None;
     }
 }

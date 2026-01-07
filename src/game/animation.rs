@@ -6,11 +6,11 @@ use crate::screens::Screen;
 
 use super::{
     board::{Piece, node_position},
-    state::{GameOverEvent, GameSettings, GameState, PieceColor, TurnChangeEvent},
+    state::{GameOverEvent, GameSettings, GameState, TurnChangeEvent},
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_event::<MoveEvent>();
+    app.add_message::<MoveEvent>();
     app.add_systems(
         Update,
         (handle_move_events, animate_pieces, check_animation_complete)
@@ -19,7 +19,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct MoveEvent {
     pub piece_entity: Entity,
     pub target_node: usize,
@@ -37,7 +37,7 @@ const ANIMATION_SPEED: f32 = 5.0;
 
 fn handle_move_events(
     mut commands: Commands,
-    mut move_events: EventReader<MoveEvent>,
+    mut move_events: MessageReader<MoveEvent>,
     mut pieces: Query<(&mut Piece, &Transform)>,
     settings: Res<GameSettings>,
 ) {
@@ -99,8 +99,8 @@ fn check_animation_complete(
     pieces_moving: Query<(Entity, &Piece, &MovingPiece)>,
     pieces_all: Query<(&Piece, &Children)>,
     mut game_state: ResMut<GameState>,
-    mut turn_events: EventWriter<TurnChangeEvent>,
-    mut game_over_events: EventWriter<GameOverEvent>,
+    mut turn_events: MessageWriter<TurnChangeEvent>,
+    mut game_over_events: MessageWriter<GameOverEvent>,
 ) {
     for (entity, piece, moving) in &pieces_moving {
         if moving.progress >= 1.0 {
@@ -122,15 +122,4 @@ fn check_animation_complete(
             }
         }
     }
-}
-
-pub fn is_any_piece_moving(pieces: &Query<(Entity, &Piece, &MovingPiece)>) -> bool {
-    !pieces.is_empty()
-}
-
-pub fn is_piece_moving(
-    entity: Entity,
-    pieces: &Query<(Entity, &Piece, &MovingPiece), Without<PieceColor>>,
-) -> bool {
-    pieces.get(entity).is_ok()
 }

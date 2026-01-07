@@ -5,8 +5,8 @@ use bevy::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<GameSettings>();
     app.init_resource::<GameState>();
-    app.add_event::<TurnChangeEvent>();
-    app.add_event::<GameOverEvent>();
+    app.add_message::<TurnChangeEvent>();
+    app.add_message::<GameOverEvent>();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -53,12 +53,12 @@ impl GameState {
     }
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct TurnChangeEvent {
     pub new_turn: PieceColor,
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct GameOverEvent {
     pub winner: PieceColor,
 }

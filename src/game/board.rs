@@ -202,7 +202,7 @@ fn update_piece_colors(
             && piece.color == game_state.current_turn
             && can_piece_move(piece, &pieces);
 
-        for &child in children.iter() {
+        for child in children.iter() {
             if let Ok(mut sprite) = highlights.get_mut(child) {
                 sprite.color = if can_move {
                     Color::srgba(1.0, 1.0, 0.0, 0.8)

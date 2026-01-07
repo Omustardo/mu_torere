@@ -1,19 +1,22 @@
 //! Computer player AI for Mu Torere.
 
 use bevy::prelude::*;
-use rand::seq::SliceRandom;
+use rand::prelude::*;
 
 use crate::screens::Screen;
 
 use super::{
     animation::MoveEvent,
-    board::{Piece, get_valid_moves},
+    board::{get_valid_moves, Piece},
     state::{GameMode, GameSettings, GameState, PieceColor},
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<ComputerThinkTimer>();
-    app.add_systems(Update, computer_turn.run_if(in_state(Screen::Gameplay)));
+    app.add_systems(
+        Update,
+        computer_turn.run_if(in_state(Screen::Gameplay)),
+    );
 }
 
 #[derive(Resource)]
@@ -39,7 +42,7 @@ fn computer_turn(
     pieces: Query<(Entity, &Piece, &Children)>,
     pieces_for_validation: Query<(&Piece, &Children)>,
     moving_pieces: Query<&super::animation::MovingPiece>,
-    mut move_events: EventWriter<MoveEvent>,
+    mut move_events: MessageWriter<MoveEvent>,
 ) {
     if settings.mode != GameMode::VsComputer {
         return;
@@ -68,7 +71,7 @@ fn computer_turn(
 
     think_timer.timer.tick(time.delta());
 
-    if !think_timer.timer.finished() {
+    if !think_timer.timer.is_finished() {
         return;
     }
 

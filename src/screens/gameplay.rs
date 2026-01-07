@@ -3,11 +3,11 @@
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 use crate::{
-    Pause,
     game::state::{GameOverEvent, GameState, PieceColor},
     menus::Menu,
     screens::Screen,
     theme::widget,
+    Pause,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -16,7 +16,10 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (spawn_turn_indicator, update_turn_indicator).run_if(in_state(Screen::Gameplay)),
     );
-    app.add_systems(Update, handle_game_over.run_if(in_state(Screen::Gameplay)));
+    app.add_systems(
+        Update,
+        handle_game_over.run_if(in_state(Screen::Gameplay)),
+    );
 
     app.add_systems(
         Update,
@@ -24,7 +27,9 @@ pub(super) fn plugin(app: &mut App) {
             (pause, spawn_pause_overlay, open_pause_menu).run_if(
                 in_state(Screen::Gameplay)
                     .and(in_state(Menu::None))
-                    .and(input_just_pressed(KeyCode::KeyP).or(input_just_pressed(KeyCode::Escape))),
+                    .and(
+                        input_just_pressed(KeyCode::KeyP).or(input_just_pressed(KeyCode::Escape)),
+                    ),
             ),
             close_menu.run_if(
                 in_state(Screen::Gameplay)
@@ -98,7 +103,7 @@ fn update_turn_indicator(
     mut texts: Query<&mut Text>,
 ) {
     for children in &indicators {
-        for &child in children.iter() {
+        for child in children.iter() {
             if let Ok(mut text) = texts.get_mut(child) {
                 text.0 = if game_state.game_over {
                     match game_state.winner {
@@ -119,7 +124,7 @@ fn update_turn_indicator(
 
 fn handle_game_over(
     mut commands: Commands,
-    mut game_over_events: EventReader<GameOverEvent>,
+    mut game_over_events: MessageReader<GameOverEvent>,
     existing: Query<Entity, With<GameOverUI>>,
 ) {
     for event in game_over_events.read() {

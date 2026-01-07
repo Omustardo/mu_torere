@@ -6,8 +6,8 @@ use crate::screens::Screen;
 
 use super::{
     animation::MoveEvent,
-    board::{PIECE_RADIUS, Piece, get_valid_moves, node_position},
-    state::{GameMode, GameSettings, GameState},
+    board::{get_valid_moves, node_position, Piece, PIECE_RADIUS},
+    state::{GameMode, GameSettings, GameState, PieceColor},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -33,7 +33,7 @@ fn handle_click(
     game_state: Res<GameState>,
     settings: Res<GameSettings>,
     moving_pieces: Query<&super::animation::MovingPiece>,
-    mut move_events: EventWriter<MoveEvent>,
+    mut move_events: MessageWriter<MoveEvent>,
 ) {
     if game_state.game_over {
         return;
@@ -66,7 +66,7 @@ fn handle_click(
     let current_turn = game_state.current_turn;
     let is_player_turn = match settings.mode {
         GameMode::VsPlayer => true,
-        GameMode::VsComputer => current_turn == super::state::PieceColor::White,
+        GameMode::VsComputer => current_turn == PieceColor::White,
     };
 
     if !is_player_turn {

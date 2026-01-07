@@ -4,7 +4,7 @@ mod animation;
 mod board;
 mod computer;
 mod input;
-mod state;
+pub mod state;
 
 use bevy::prelude::*;
 

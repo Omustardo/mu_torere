@@ -5,7 +5,7 @@ use std::f32::consts::PI;
 
 use crate::screens::Screen;
 
-use super::state::{GameState, PieceColor};
+use super::{animation::MovingPiece, state::{GameState, PieceColor}};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), spawn_board);
@@ -194,17 +194,27 @@ fn piece_visual(color: PieceColor) -> impl Bundle {
 
 fn update_piece_colors(
     game_state: Res<GameState>,
-    pieces: Query<(&Piece, &Children)>,
+    pieces: Query<(Entity, &Piece, &Children)>,
+    moving_pieces: Query<Entity, With<MovingPiece>>,
     mut highlights: Query<&mut Sprite, With<HighlightRing>>,
 ) {
-    for (piece, children) in &pieces {
-        let can_move = !game_state.game_over
-            && piece.color == game_state.current_turn
-            && can_piece_move(piece, &pieces);
+    let moving_entity = moving_pieces.iter().next();
+    let pieces_for_validation: Vec<_> = pieces.iter().map(|(_, p, c)| (p, c)).collect();
+
+    for (entity, piece, children) in &pieces {
+        let should_highlight = if let Some(moving) = moving_entity {
+            // While animating, only highlight the moving piece
+            entity == moving
+        } else {
+            // Normal state: highlight pieces that can move
+            !game_state.game_over
+                && piece.color == game_state.current_turn
+                && can_piece_move_with_slice(piece, &pieces_for_validation)
+        };
 
         for child in children.iter() {
             if let Ok(mut sprite) = highlights.get_mut(child) {
-                sprite.color = if can_move {
+                sprite.color = if should_highlight {
                     Color::srgba(1.0, 1.0, 0.0, 0.8)
                 } else {
                     Color::srgba(1.0, 1.0, 0.0, 0.0)
@@ -212,6 +222,42 @@ fn update_piece_colors(
             }
         }
     }
+}
+
+fn can_piece_move_with_slice(piece: &Piece, pieces: &[(&Piece, &Children)]) -> bool {
+    let adjacencies = get_adjacencies(piece.node_index);
+
+    for adj_index in adjacencies {
+        if is_node_empty_slice(adj_index, pieces) {
+            if adj_index == CENTER_INDEX || piece.node_index == CENTER_INDEX {
+                if is_adjacent_to_opponent_slice(piece, pieces) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+fn is_node_empty_slice(node_index: usize, pieces: &[(&Piece, &Children)]) -> bool {
+    for (piece, _) in pieces {
+        if piece.node_index == node_index {
+            return false;
+        }
+    }
+    true
+}
+
+fn is_adjacent_to_opponent_slice(piece: &Piece, pieces: &[(&Piece, &Children)]) -> bool {
+    let adjacencies = get_adjacencies(piece.node_index);
+    for (other_piece, _) in pieces {
+        if other_piece.color != piece.color && adjacencies.contains(&other_piece.node_index) {
+            return true;
+        }
+    }
+    false
 }
 
 pub fn can_piece_move(piece: &Piece, pieces: &Query<(&Piece, &Children)>) -> bool {

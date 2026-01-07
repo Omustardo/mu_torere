@@ -2,6 +2,7 @@
 
 mod credits;
 mod main;
+mod new_game;
 mod pause;
 mod settings;
 
@@ -13,6 +14,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
         credits::plugin,
         main::plugin,
+        new_game::plugin,
         settings::plugin,
         pause::plugin,
     ));
@@ -23,6 +25,7 @@ pub enum Menu {
     #[default]
     None,
     Main,
+    NewGame,
     Credits,
     Settings,
     Pause,

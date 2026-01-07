@@ -1,7 +1,10 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
 use bevy::{
-    dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
+    dev_tools::states::log_transitions,
+    input::common_conditions::input_just_pressed,
+    prelude::*,
+    ui_render::UiDebugOptions,
 };
 
 use crate::screens::Screen;

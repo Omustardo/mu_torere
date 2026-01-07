@@ -1,10 +1,8 @@
 //! The settings menu.
-//!
-//! Additional settings and accessibility options should go here.
 
 use bevy::{audio::Volume, input::common_conditions::input_just_pressed, prelude::*};
 
-use crate::{menus::Menu, screens::Screen, theme::prelude::*};
+use crate::{game::GameSettings, menus::Menu, screens::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
@@ -15,7 +13,8 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        update_global_volume_label.run_if(in_state(Menu::Settings)),
+        (update_global_volume_label, update_instant_animation_label)
+            .run_if(in_state(Menu::Settings)),
     );
 }
 
@@ -51,6 +50,14 @@ fn settings_grid() -> impl Bundle {
                 }
             ),
             global_volume_widget(),
+            (
+                widget::label("Instant Animation"),
+                Node {
+                    justify_self: JustifySelf::End,
+                    ..default()
+                }
+            ),
+            instant_animation_widget(),
         ],
     )
 }
@@ -69,11 +76,36 @@ fn global_volume_widget() -> impl Bundle {
                 Node {
                     padding: UiRect::horizontal(px(10)),
                     justify_content: JustifyContent::Center,
+                    min_width: px(60),
                     ..default()
                 },
                 children![(widget::label(""), GlobalVolumeLabel)],
             ),
             widget::button_small("+", raise_global_volume),
+        ],
+    )
+}
+
+fn instant_animation_widget() -> impl Bundle {
+    (
+        Name::new("Instant Animation Widget"),
+        Node {
+            justify_self: JustifySelf::Start,
+            ..default()
+        },
+        children![
+            widget::button_small("<", toggle_instant_animation),
+            (
+                Name::new("Current Setting"),
+                Node {
+                    padding: UiRect::horizontal(px(10)),
+                    justify_content: JustifyContent::Center,
+                    min_width: px(60),
+                    ..default()
+                },
+                children![(widget::label(""), InstantAnimationLabel)],
+            ),
+            widget::button_small(">", toggle_instant_animation),
         ],
     )
 }
@@ -91,9 +123,17 @@ fn raise_global_volume(_: On<Pointer<Click>>, mut global_volume: ResMut<GlobalVo
     global_volume.volume = Volume::Linear(linear);
 }
 
+fn toggle_instant_animation(_: On<Pointer<Click>>, mut settings: ResMut<GameSettings>) {
+    settings.instant_animation = !settings.instant_animation;
+}
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 struct GlobalVolumeLabel;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+struct InstantAnimationLabel;
 
 fn update_global_volume_label(
     global_volume: Res<GlobalVolume>,
@@ -101,6 +141,17 @@ fn update_global_volume_label(
 ) {
     let percent = 100.0 * global_volume.volume.to_linear();
     label.0 = format!("{percent:3.0}%");
+}
+
+fn update_instant_animation_label(
+    settings: Res<GameSettings>,
+    mut label: Single<&mut Text, With<InstantAnimationLabel>>,
+) {
+    label.0 = if settings.instant_animation {
+        "On".to_string()
+    } else {
+        "Off".to_string()
+    };
 }
 
 fn go_back_on_click(

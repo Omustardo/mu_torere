@@ -4,7 +4,7 @@
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
 mod asset_tracking;
-mod demo;
+mod gameplay;
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod menus;
@@ -45,7 +45,7 @@ impl Plugin for AppPlugin {
         // Add other plugins.
         app.add_plugins((
             asset_tracking::plugin,
-            demo::plugin,
+            gameplay::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
             menus::plugin,

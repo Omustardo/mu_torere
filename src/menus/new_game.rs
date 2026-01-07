@@ -20,7 +20,6 @@ fn spawn_new_game_menu(mut commands: Commands) {
         GlobalZIndex(2),
         DespawnOnExit(Menu::NewGame),
         children![
-            widget::header("New Game"),
             widget::button("vs Player", start_vs_player),
             widget::button("vs Computer", start_vs_computer),
             widget::button("Back", go_back),

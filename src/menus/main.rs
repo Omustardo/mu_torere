@@ -17,7 +17,6 @@ fn spawn_main_menu(mut commands: Commands) {
         children![
             widget::button("New Game", open_new_game_menu),
             widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
             widget::button("Exit", exit_app),
         ],
         #[cfg(target_family = "wasm")]
@@ -35,10 +34,6 @@ fn open_new_game_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Men
 
 fn open_settings_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::Settings);
-}
-
-fn open_credits_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Credits);
 }
 
 #[cfg(not(target_family = "wasm"))]

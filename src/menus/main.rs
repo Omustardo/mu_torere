@@ -23,7 +23,6 @@ fn spawn_main_menu(mut commands: Commands) {
         children![
             widget::button("New Game", open_new_game_menu),
             widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
         ],
     ));
 }

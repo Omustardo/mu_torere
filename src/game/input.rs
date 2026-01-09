@@ -2,7 +2,7 @@
 
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::screens::Screen;
+use crate::{screens::Screen, PausableSystems};
 
 use super::{
     animation::MoveEvent,
@@ -13,7 +13,9 @@ use super::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        handle_click.run_if(in_state(Screen::Gameplay)),
+        handle_click
+            .run_if(in_state(Screen::Gameplay))
+            .in_set(PausableSystems),
     );
 }
 

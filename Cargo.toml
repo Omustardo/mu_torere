@@ -37,6 +37,7 @@ tracing = { version = "0.1", features = [
 
 [target.wasm32-unknown-unknown.dependencies]
 getrandom = { version = "0.3", features = ["wasm_js"] }
+bevy = { version = "0.17", default-features = false, features = ["webgpu"] }
 
 [features]
 # Default to a native dev build.

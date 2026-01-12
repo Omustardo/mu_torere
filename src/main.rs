@@ -6,7 +6,7 @@
 mod asset_tracking;
 #[cfg(feature = "dev")]
 mod dev_tools;
-mod game;
+mod games;
 mod menus;
 mod screens;
 mod theme;
@@ -33,7 +33,7 @@ impl Plugin for AppPlugin {
                 })
                 .set(WindowPlugin {
                     primary_window: Window {
-                        title: "Mu Torere".to_string(),
+                        title: "Minigames".to_string(),
                         fit_canvas_to_parent: true,
                         ..default()
                     }
@@ -47,7 +47,7 @@ impl Plugin for AppPlugin {
             asset_tracking::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
-            game::plugin,
+            games::plugin,
             menus::plugin,
             screens::plugin,
             theme::plugin,

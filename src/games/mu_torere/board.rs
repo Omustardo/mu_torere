@@ -3,16 +3,17 @@
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-use crate::screens::Screen;
+use crate::screens::{ActiveGame, Screen};
 
-use super::{animation::MovingPiece, state::{GameState, PieceColor}};
+use super::{
+    animation::MovingPiece,
+    is_playing_mu_torere,
+    state::{GameState, PieceColor},
+};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Screen::Gameplay), spawn_board);
-    app.add_systems(
-        Update,
-        update_piece_colors.run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_systems(OnEnter(Screen::Playing(ActiveGame::MuTorere)), spawn_board);
+    app.add_systems(Update, update_piece_colors.run_if(is_playing_mu_torere));
 }
 
 pub const CENTER_INDEX: usize = 8;
@@ -61,7 +62,7 @@ fn spawn_board(mut commands: Commands) {
         Name::new("Board"),
         Transform::default(),
         Visibility::default(),
-        DespawnOnExit(Screen::Gameplay),
+        StateScoped(Screen::Playing(ActiveGame::MuTorere)),
         children![board_lines(), board_nodes_and_pieces(),],
     ));
 }

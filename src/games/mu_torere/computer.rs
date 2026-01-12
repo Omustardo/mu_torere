@@ -3,20 +3,16 @@
 use bevy::prelude::*;
 use rand::prelude::*;
 
-use crate::screens::Screen;
-
 use super::{
     animation::MoveEvent,
     board::{get_valid_moves, Piece},
+    is_playing_mu_torere,
     state::{GameMode, GameSettings, GameState, PieceColor},
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<ComputerThinkTimer>();
-    app.add_systems(
-        Update,
-        computer_turn.run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_systems(Update, computer_turn.run_if(is_playing_mu_torere));
 }
 
 #[derive(Resource)]

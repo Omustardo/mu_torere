@@ -1,7 +1,7 @@
 //! The game's menus and transitions between them.
 
-mod main;
-mod new_game;
+mod game_options;
+mod game_select;
 mod pause;
 mod settings;
 
@@ -11,8 +11,8 @@ pub(super) fn plugin(app: &mut App) {
     app.init_state::<Menu>();
 
     app.add_plugins((
-        main::plugin,
-        new_game::plugin,
+        game_select::plugin,
+        game_options::plugin,
         settings::plugin,
         pause::plugin,
     ));
@@ -22,8 +22,12 @@ pub(super) fn plugin(app: &mut App) {
 pub enum Menu {
     #[default]
     None,
-    Main,
-    NewGame,
+    /// Game selection menu (main menu)
+    GameSelect,
+    /// Game-specific options (e.g., vs Player / vs Computer for Mu Torere)
+    GameOptions,
+    /// Global settings
     Settings,
+    /// In-game pause menu
     Pause,
 }

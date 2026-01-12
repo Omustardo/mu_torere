@@ -1,25 +1,40 @@
-//! The new game menu for selecting game mode.
+//! Game options menu - shown after selecting a game, before starting it.
+//! Displays game-specific options (e.g., vs Player / vs Computer for Mu Torere).
 
 use bevy::prelude::*;
 
 use crate::{
     asset_tracking::ResourceHandles,
-    game::{GameMode, GameSettings},
+    games::mu_torere::{GameMode, GameSettings},
     menus::Menu,
-    screens::Screen,
+    screens::{ActiveGame, Screen},
     theme::widget,
 };
 
+use super::game_select::SelectedGame;
+
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::NewGame), spawn_new_game_menu);
+    app.add_systems(OnEnter(Menu::GameOptions), spawn_game_options_menu);
 }
 
-fn spawn_new_game_menu(mut commands: Commands) {
+fn spawn_game_options_menu(mut commands: Commands, selected: Res<SelectedGame>) {
+    let Some(game) = selected.game else {
+        return;
+    };
+
+    match game {
+        ActiveGame::MuTorere => spawn_mu_torere_options(&mut commands),
+        // Add other games here
+    }
+}
+
+fn spawn_mu_torere_options(commands: &mut Commands) {
     commands.spawn((
-        widget::ui_root("New Game Menu"),
+        widget::ui_root("Mu Torere Options"),
         GlobalZIndex(2),
-        DespawnOnExit(Menu::NewGame),
+        StateScoped(Menu::GameOptions),
         children![
+            widget::header("Mū Tōrere"),
             widget::button("vs Player", start_vs_player),
             widget::button("vs Computer", start_vs_computer),
             widget::button("Back", go_back),
@@ -37,9 +52,9 @@ fn start_vs_player(
     settings.mode = GameMode::VsPlayer;
     next_menu.set(Menu::None);
     if resource_handles.is_all_done() {
-        next_screen.set(Screen::Gameplay);
+        next_screen.set(Screen::Playing(ActiveGame::MuTorere));
     } else {
-        next_screen.set(Screen::Loading);
+        next_screen.set(Screen::Loading(ActiveGame::MuTorere));
     }
 }
 
@@ -53,12 +68,12 @@ fn start_vs_computer(
     settings.mode = GameMode::VsComputer;
     next_menu.set(Menu::None);
     if resource_handles.is_all_done() {
-        next_screen.set(Screen::Gameplay);
+        next_screen.set(Screen::Playing(ActiveGame::MuTorere));
     } else {
-        next_screen.set(Screen::Loading);
+        next_screen.set(Screen::Loading(ActiveGame::MuTorere));
     }
 }
 
 fn go_back(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Main);
+    next_menu.set(Menu::GameSelect);
 }

@@ -2,11 +2,12 @@
 
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{screens::Screen, PausableSystems};
+use crate::PausableSystems;
 
 use super::{
-    animation::MoveEvent,
+    animation::{MoveEvent, MovingPiece},
     board::{get_valid_moves, Piece, PIECE_RADIUS},
+    is_playing_mu_torere,
     state::{GameMode, GameSettings, GameState, PieceColor},
 };
 
@@ -14,7 +15,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         handle_click
-            .run_if(in_state(Screen::Gameplay))
+            .run_if(is_playing_mu_torere)
             .in_set(PausableSystems),
     );
 }
@@ -27,7 +28,7 @@ fn handle_click(
     pieces_for_validation: Query<(&Piece, &Children)>,
     game_state: Res<GameState>,
     settings: Res<GameSettings>,
-    moving_pieces: Query<&super::animation::MovingPiece>,
+    moving_pieces: Query<&MovingPiece>,
     mut move_events: MessageWriter<MoveEvent>,
 ) {
     if game_state.game_over {

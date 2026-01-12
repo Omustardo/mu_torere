@@ -2,10 +2,9 @@
 
 use bevy::prelude::*;
 
-use crate::screens::Screen;
-
 use super::{
-    board::{Piece, node_position},
+    board::{has_any_valid_moves, node_position, Piece},
+    is_playing_mu_torere,
     state::{GameOverEvent, GameSettings, GameState, TurnChangeEvent},
 };
 
@@ -15,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (handle_move_events, animate_pieces, check_animation_complete)
             .chain()
-            .run_if(in_state(Screen::Gameplay)),
+            .run_if(is_playing_mu_torere),
     );
 }
 
@@ -108,7 +107,7 @@ fn check_animation_complete(
 
             let next_turn = piece.color.opposite();
 
-            if !super::board::has_any_valid_moves(next_turn, &pieces_all) {
+            if !has_any_valid_moves(next_turn, &pieces_all) {
                 game_state.game_over = true;
                 game_state.winner = Some(piece.color);
                 game_over_events.write(GameOverEvent {

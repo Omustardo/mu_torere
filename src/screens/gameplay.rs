@@ -32,7 +32,10 @@ pub(super) fn plugin(app: &mut App) {
         OnExit(Screen::Playing(ActiveGame::MuTorere)),
         (close_menu, unpause),
     );
-    // Add OnExit for other games as they're added
+    app.add_systems(
+        OnExit(Screen::Playing(ActiveGame::MentalMath)),
+        (close_menu, unpause),
+    );
 
     app.add_systems(OnEnter(Menu::None), unpause.run_if(is_playing));
 }

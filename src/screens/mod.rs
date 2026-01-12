@@ -16,7 +16,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
 pub enum ActiveGame {
     MuTorere,
-    // Add new games here as variants
+    MentalMath,
 }
 
 /// The game's main screen states.

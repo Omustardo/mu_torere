@@ -25,6 +25,7 @@ fn spawn_game_select_menu(mut commands: Commands) {
         children![
             widget::header("Select a Game"),
             widget::button("Mū Tōrere", select_mu_torere),
+            widget::button("Mental Math", select_mental_math),
             widget::button("Settings", open_settings_menu),
             widget::button("Exit", exit_app),
         ],
@@ -32,6 +33,7 @@ fn spawn_game_select_menu(mut commands: Commands) {
         children![
             widget::header("Select a Game"),
             widget::button("Mū Tōrere", select_mu_torere),
+            widget::button("Mental Math", select_mental_math),
             widget::button("Settings", open_settings_menu),
         ],
     ));
@@ -43,6 +45,15 @@ fn select_mu_torere(
     mut next_menu: ResMut<NextState<Menu>>,
 ) {
     selected.game = Some(ActiveGame::MuTorere);
+    next_menu.set(Menu::GameOptions);
+}
+
+fn select_mental_math(
+    _: On<Pointer<Click>>,
+    mut selected: ResMut<SelectedGame>,
+    mut next_menu: ResMut<NextState<Menu>>,
+) {
+    selected.game = Some(ActiveGame::MentalMath);
     next_menu.set(Menu::GameOptions);
 }
 

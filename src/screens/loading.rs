@@ -12,9 +12,12 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(Screen::Loading(ActiveGame::MuTorere)),
-        spawn_loading_screen,
+        spawn_loading_screen_mu_torere,
     );
-    // Add OnEnter for other games as they're added
+    app.add_systems(
+        OnEnter(Screen::Loading(ActiveGame::MentalMath)),
+        spawn_loading_screen_mental_math,
+    );
 
     app.add_systems(
         Update,
@@ -25,11 +28,20 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component)]
 struct LoadingScreen;
 
-fn spawn_loading_screen(mut commands: Commands) {
+fn spawn_loading_screen_mu_torere(mut commands: Commands) {
     commands.spawn((
         LoadingScreen,
         widget::ui_root("Loading Screen"),
         StateScoped(Screen::Loading(ActiveGame::MuTorere)),
+        children![widget::label("Loading...")],
+    ));
+}
+
+fn spawn_loading_screen_mental_math(mut commands: Commands) {
+    commands.spawn((
+        LoadingScreen,
+        widget::ui_root("Loading Screen"),
+        StateScoped(Screen::Loading(ActiveGame::MentalMath)),
         children![widget::label("Loading...")],
     ));
 }

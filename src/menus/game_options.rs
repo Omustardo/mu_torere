@@ -24,7 +24,7 @@ fn spawn_game_options_menu(mut commands: Commands, selected: Res<SelectedGame>) 
 
     match game {
         ActiveGame::MuTorere => spawn_mu_torere_options(&mut commands),
-        // Add other games here
+        ActiveGame::MentalMath => spawn_mental_math_options(&mut commands),
     }
 }
 
@@ -76,4 +76,32 @@ fn start_vs_computer(
 
 fn go_back(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::GameSelect);
+}
+
+fn spawn_mental_math_options(commands: &mut Commands) {
+    commands.spawn((
+        widget::ui_root("Mental Math Options"),
+        GlobalZIndex(2),
+        StateScoped(Menu::GameOptions),
+        children![
+            widget::header("Mental Math"),
+            widget::label("Solve math problems!"),
+            widget::button("Start", start_mental_math),
+            widget::button("Back", go_back),
+        ],
+    ));
+}
+
+fn start_mental_math(
+    _: On<Pointer<Click>>,
+    resource_handles: Res<ResourceHandles>,
+    mut next_screen: ResMut<NextState<Screen>>,
+    mut next_menu: ResMut<NextState<Menu>>,
+) {
+    next_menu.set(Menu::None);
+    if resource_handles.is_all_done() {
+        next_screen.set(Screen::Playing(ActiveGame::MentalMath));
+    } else {
+        next_screen.set(Screen::Loading(ActiveGame::MentalMath));
+    }
 }

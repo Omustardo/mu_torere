@@ -10,11 +10,11 @@ on:
         type: string
       build_for_windows:
         description: "Build for Windows (WARNING: slow!)"
-        default: true
+        default: false
         type: boolean
       build_for_macos:
         description: "Build for macOS"
-        default: true
+        default: false
         type: boolean
       build_for_linux:
         description: "Build for Linux"
@@ -30,11 +30,11 @@ on:
         type: boolean
       deploy_to_itch:
         description: "Deploy to itch.io (if configured)"
-        default: true
+        default: false
         type: boolean
       deploy_to_github_pages:
         description: "Deploy web build to GitHub Pages"
-        default: false
+        default: true
         type: boolean
       deny_warnings:
         description: "Deny warnings"

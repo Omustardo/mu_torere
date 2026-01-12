@@ -29,7 +29,7 @@ fn spawn_loading_screen(mut commands: Commands) {
     commands.spawn((
         LoadingScreen,
         widget::ui_root("Loading Screen"),
-        StateScoped(Screen::Loading(ActiveGame::MuTorere)),
+        StateScoped::new(Screen::Loading(ActiveGame::MuTorere)),
         children![widget::label("Loading...")],
     ));
 }

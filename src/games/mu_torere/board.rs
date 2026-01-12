@@ -62,7 +62,7 @@ fn spawn_board(mut commands: Commands) {
         Name::new("Board"),
         Transform::default(),
         Visibility::default(),
-        StateScoped(Screen::Playing(ActiveGame::MuTorere)),
+        StateScoped::new(Screen::Playing(ActiveGame::MuTorere)),
         children![board_lines(), board_nodes_and_pieces(),],
     ));
 }

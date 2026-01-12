@@ -20,7 +20,7 @@ fn spawn_game_select_menu(mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Game Select Menu"),
         GlobalZIndex(2),
-        StateScoped(Menu::GameSelect),
+        StateScoped::new(Menu::GameSelect),
         #[cfg(not(target_family = "wasm"))]
         children![
             widget::header("Select a Game"),

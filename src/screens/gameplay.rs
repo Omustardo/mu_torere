@@ -55,7 +55,7 @@ fn spawn_pause_overlay(mut commands: Commands) {
         },
         GlobalZIndex(1),
         BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
-        StateScoped(Pause(true)),
+        StateScoped::new(Pause(true)),
     ));
 }
 

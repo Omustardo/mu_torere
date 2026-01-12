@@ -26,7 +26,7 @@ fn spawn_settings_menu(mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Settings Menu"),
         GlobalZIndex(2),
-        StateScoped(Menu::Settings),
+        StateScoped::new(Menu::Settings),
         children![
             widget::header("Settings"),
             settings_grid(),

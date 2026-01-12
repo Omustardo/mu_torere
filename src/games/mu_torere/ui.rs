@@ -68,7 +68,7 @@ fn spawn_turn_indicator(
             justify_content: JustifyContent::Center,
             ..default()
         },
-        StateScoped(Screen::Playing(ActiveGame::MuTorere)),
+        StateScoped::new(Screen::Playing(ActiveGame::MuTorere)),
         children![(
             Text(text),
             TextFont::from_font_size(32.0),
@@ -131,7 +131,7 @@ fn handle_game_over(
                 ..default()
             },
             GlobalZIndex(3),
-            StateScoped(Screen::Playing(ActiveGame::MuTorere)),
+            StateScoped::new(Screen::Playing(ActiveGame::MuTorere)),
             children![
                 widget::header(winner_text),
                 widget::button("Main Menu", return_to_main_menu),

@@ -32,7 +32,7 @@ fn spawn_mu_torere_options(commands: &mut Commands) {
     commands.spawn((
         widget::ui_root("Mu Torere Options"),
         GlobalZIndex(2),
-        StateScoped(Menu::GameOptions),
+        StateScoped::new(Menu::GameOptions),
         children![
             widget::header("Mū Tōrere"),
             widget::button("vs Player", start_vs_player),
